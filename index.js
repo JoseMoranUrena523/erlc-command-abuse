@@ -22,6 +22,18 @@ async function checkCommandLogs() {
 
     const commandLogs = await response.json();
 
+    const playersResponse = await fetch(`${baseURL}server/players`, {
+      headers: { 
+        'Server-Key': serverKey
+      }
+    });
+
+    if (!playersResponse.ok) {
+      throw new Error(`Error: ${playersResponse.statusText}`);
+    }
+
+    const players = await playersResponse.json();
+
     for (const log of commandLogs) {
       const { Player, Command } = log;
       const playerName = Player.split(':')[0];
@@ -29,20 +41,41 @@ async function checkCommandLogs() {
 
       if (/^(:ban all|:unmod all|:mod all|:jail all)$/i.test(Command)) {
         try {
-          await fetch(`${baseURL}server/command`, {
-            method: 'POST',
-            headers: { 
-              'Server-Key': serverKey,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              command: `:unmod ${playerId}`
-            })
-          });
+          const player = players.find(p => p.Player.split(':')[1] === playerId);
 
-          console.log(`Executed :unmod on player with ID ${playerId} who used the command: ${Command}`);
+          if (player) {
+            const { Permission } = player;
+
+            if (Permission === 'Server Administrator') {
+              await fetch(`${baseURL}server/command`, {
+                method: 'POST',
+                headers: { 
+                  'Server-Key': serverKey,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  command: `:unadmin ${playerId}`
+                })
+              });
+
+              console.log(`Executed :unadmin on player with ID ${playerId} who used the command: ${Command}`);
+            } else if (Permission === 'Server Moderator') {
+              await fetch(`${baseURL}server/command`, {
+                method: 'POST',
+                headers: { 
+                  'Server-Key': serverKey,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  command: `:unmod ${playerId}`
+                })
+              });
+
+              console.log(`Executed :unmod on player with ID ${playerId} who used the command: ${Command}`);
+            }
+          }
         } catch (commandError) {
-          console.error(`Error executing unmod command:`, commandError);
+          console.error(`Error executing unmod/unadmin command:`, commandError);
         }
       }
     }
