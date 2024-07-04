@@ -39,7 +39,7 @@ async function checkCommandLogs() {
       const playerName = Player.split(':')[0];
       const playerId = Player.split(':')[1];
 
-      if (/^(:ban all|:unmod all|:mod all|:jail all)$/i.test(Command)) {
+      if (/^(:ban all|:unmod all|:mod all|:jail all|:admin all|:unadmin all)$/i.test(Command)) {
         try {
           const player = players.find(p => p.Player.split(':')[1] === playerId);
 
