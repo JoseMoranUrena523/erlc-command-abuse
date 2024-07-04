@@ -5,7 +5,7 @@ const baseURL = 'https://api.policeroleplay.community/v1/'; // Base URL, can be 
 const interval = 6; // How often to check command logs (DO NOT CHANGE, RATE LIMIT)
 
 if (serverKey === 'exampleServerKey') {
-  return console.error("You've started the automation for the first time! Please set your server key in line 3 of index.js. You can also modify the interval, PRC's base URL, or the join message with lines 4-6.");
+  return console.error("You've started the automation for the first time! Please set your server key in line 3 of index.js. You can also modify the interval, PRC's base URL, or the join message with lines 4 and 5.");
 }
 
 async function checkCommandLogs() {
