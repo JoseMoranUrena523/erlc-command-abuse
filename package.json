@@ -1,0 +1,28 @@
+{
+  "name": "erlc-command-abuse",
+  "version": "1.0.0",
+  "description": "This automation checks to see if anyone does a very dangerous command and unmods them within 6 seconds.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoseMoranUrena523/erlc-command-abuse.git"
+  },
+  "keywords": [
+    "erlc",
+    "roblox",
+    "prc",
+    "automation"
+  ],
+  "author": "Jose Moran Urena",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoseMoranUrena523/erlc-command-abuse/issues"
+  },
+  "homepage": "https://github.com/JoseMoranUrena523/erlc-command-abuse#readme",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
