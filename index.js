@@ -1,8 +1,8 @@
-import fetch from 'node-fetch';
+const fetch = require('node-fetch');
 
 const serverKey = 'exampleServerKey'; // Your server key, can be found in private server settings
 const baseURL = 'https://api.policeroleplay.community/v1/'; // Base URL, can be found at https://apidocs.policeroleplay.community/for-developers/api-reference
-const interval = 6; // How often to check command logs (DO NOT CHANGE, RATE LIMIT)
+const minInterval = 1; // Minimum interval in seconds to prevent too frequent checking (DO NOT UPDATE)
 
 if (serverKey === 'exampleServerKey') {
   return console.error("You've started the automation for the first time! Please set your server key in line 3 of index.js. You can also modify the interval, PRC's base URL, or the join message with lines 4 and 5.");
@@ -21,6 +21,8 @@ async function checkCommandLogs() {
     }
 
     const commandLogs = await response.json();
+    const rateLimitRemaining = response.headers.get('X-RateLimit-Remaining');
+    const rateLimitReset = response.headers.get('X-RateLimit-Reset');
 
     const playersResponse = await fetch(`${baseURL}server/players`, {
       headers: { 
@@ -131,9 +133,15 @@ async function checkCommandLogs() {
         }
       }
     }
+
+    let interval = Math.max(minInterval, Math.floor(60 / rateLimitRemaining));
+    console.log(`Next check in ${interval} seconds.`);
+    setTimeout(checkCommandLogs, interval * 1000);
+
   } catch (error) {
     console.error('Error fetching command logs:', error);
+    setTimeout(checkCommandLogs, 60 * 1000); // Retry after 60 seconds in case of error
   }
 }
 
-setInterval(checkCommandLogs, interval * 1000);
+checkCommandLogs();
