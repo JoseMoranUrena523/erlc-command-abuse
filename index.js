@@ -15,6 +15,10 @@ async function fetchCommandLogs() {
       headers: { 'Server-Key': serverKey }
     });
 
+    if (response.status === 422) {
+      throw new Error("Private server is shut down (there are no players), unable to proceed with automation.");
+    }
+    
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
     }
