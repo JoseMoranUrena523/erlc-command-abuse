@@ -24,6 +24,8 @@
   },
   "homepage": "https://github.com/JoseMoranUrena523/erlc-command-abuse#readme",
   "dependencies": {
-    "node-fetch": "^2.6.7"
+    "better-sqlite3": "^11.1.2",
+    "node-fetch": "^2.6.7",
+    "quick.db": "^9.1.7"
   }
 }
