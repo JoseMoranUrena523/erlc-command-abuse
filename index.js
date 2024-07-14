@@ -18,6 +18,14 @@ async function fetchCommandLogs() {
     if (response.status === 422) {
       throw new Error("Private server is shut down (there are no players), unable to proceed with automation.");
     }
+
+    if (response.status === 403) {
+      throw new Error("Invalid server key.");
+    }
+
+    if (response.status === 500) {
+      throw new Error("There was a problem communicating with Roblox.");
+    }
     
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
@@ -95,7 +103,6 @@ async function checkCommandLogs() {
       const playerId = Player.split(':')[1];
 
       if (await db.get(`${playerId}`)) {
-        console.log(`Player ID ${playerId} already processed. Skipping...`);
         continue;
       }
 
