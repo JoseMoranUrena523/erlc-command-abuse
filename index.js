@@ -4,6 +4,7 @@ const db = new QuickDB();
 
 const serverKey = 'exampleServerKey'; // Your server key, can be found in private server settings
 const baseURL = 'https://api.policeroleplay.community/v1/'; // Base URL, can be found in https://apidocs.policeroleplay.community/for-developers/api-reference
+let ssdDelay = 30; // Change the amount of seconds to check join logs during SSD (default 30, be careful of rate limit)
 
 if (serverKey === 'exampleServerKey') {
   return console.error("You've started the automation for the first time! Please set your server key in line 5 of index.js.");
@@ -16,19 +17,32 @@ async function fetchCommandLogs() {
     });
 
     if (response.status === 422) {
-      throw new Error("Private server is shut down (there are no players), unable to proceed with automation.");
+      const rateLimitReset = response.headers.get('X-RateLimit-Reset');
+      if (rateLimitReset) {
+        const resetTime = (parseInt(rateLimitReset, 10) * 1000) - Date.now() + 1000;
+        if (typeof ssdDelay === 'undefined' || resetTime > ssdDelay) {
+          ssdDelay = resetTime;
+          console.warn("Update line 7, too frequent checking.");
+        }
+        console.error(`Private server is shut down (there are no players), retrying after rate limit reset in ${resetTime / 1000} seconds.`);
+        await new Promise(resolve => setTimeout(resolve, resetTime));
+      } else {
+        console.error("Private server is shut down (there are no players), unable to proceed with automation. Retrying...");
+        await new Promise(resolve => setTimeout(resolve, 30 * 1000));
+      }
+      return fetchJoinLogs();
     }
 
     if (response.status === 403) {
-      throw new Error("Invalid server key.");
+      return console.error("Invalid server key.");
     }
 
     if (response.status === 500) {
-      throw new Error("There was a problem communicating with Roblox.");
+      return console.error("There was a problem communicating with Roblox.");
     }
     
     if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
+      return console.error(`Error: ${response.statusText}`);
     }
 
     const commandLogs = await response.json();
