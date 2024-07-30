@@ -14,7 +14,7 @@ This makes sure that the moderator/administrator cannot continue causing chaos t
 ### Installation Steps
 1. `git clone https://github.com/JoseMoranUrena523/erlc-command-abuse`
 2. `npm install pm2 -g`
-3. Edit line 5 of **index.js**.
+3. Edit line 5 and 7 of **index.js**.
 4. `npm install`
 5. `pm2 start index.js`
 
